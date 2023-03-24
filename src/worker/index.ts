@@ -1,10 +1,10 @@
-import Job from './Job';
-import type Cluster from './Cluster';
-import type { TaskFunction } from './Cluster';
+import Job from '../job';
+import type Cluster from '../cluster';
+import type { TaskFunction } from '../cluster';
 import type { Page } from 'puppeteer';
-import { timeoutExecute, debugGenerator, log } from './util';
+import { timeoutExecute, debugGenerator, log } from '../utils';
 import { inspect } from 'util';
-import { WorkerInstance, JobInstance } from './concurrency/ConcurrencyImplementation';
+import { WorkerInstance, JobInstance } from '../concurrency/abstract/Concurrency';
 
 const debug = debugGenerator('Worker');
 
@@ -48,10 +48,10 @@ export default class Worker<JobData, ReturnData> implements WorkerOptions {
     }
 
     public async handle(
-            task: TaskFunction<JobData, ReturnData>,
-            job: Job<JobData, ReturnData>,
-            timeout: number,
-        ): Promise<WorkResult> {
+        task: TaskFunction<JobData, ReturnData>,
+        job: Job<JobData, ReturnData>,
+        timeout: number,
+    ): Promise<WorkResult> {
         this.activeTarget = job;
 
         let jobInstance: JobInstance | null = null;
@@ -73,7 +73,7 @@ export default class Worker<JobData, ReturnData> implements WorkerOptions {
             }
         }
 
-         // We can be sure that page is set now, otherwise an exception would've been thrown
+        // We can be sure that page is set now, otherwise an exception would've been thrown
         page = page as Page; // this is just for TypeScript
 
         let errorState: Error | null = null;

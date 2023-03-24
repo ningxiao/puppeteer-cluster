@@ -7,7 +7,7 @@ import { Page, LaunchOptions } from 'puppeteer';
  * The ConcurrencyImplementation creates WorkerInstances. Workers create JobInstances:
  * One WorkerInstance per maxWorkers, one JobInstance per job
  */
-export default abstract class ConcurrencyImplementation {
+export default abstract class Concurrency {
 
     protected options: LaunchOptions;
     protected puppeteer: any;
@@ -78,7 +78,7 @@ export interface ResourceData {
     [key: string]: any;
 }
 
-export type ConcurrencyImplementationClassType = new (
+export type ConcurrencyClassType = new (
     options: LaunchOptions,
     puppeteer: any,
-) => ConcurrencyImplementation;
+) => Concurrency;

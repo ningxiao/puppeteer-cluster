@@ -1,5 +1,4 @@
-import Display from '../src/Display';
-
+import Display from '../src/display';
 describe('Display', () => {
     let write: any;
     let log: any;

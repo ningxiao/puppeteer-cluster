@@ -1,10 +1,10 @@
 
 import * as puppeteer from 'puppeteer';
 
-import { ResourceData } from '../ConcurrencyImplementation';
-import SingleBrowserImplementation from '../SingleBrowserImplementation';
+import { ResourceData } from './abstract/Concurrency';
+import SingleBrowser from './abstract/SingleBrowser';
 
-export default class Context extends SingleBrowserImplementation {
+export default class Context extends SingleBrowser {
 
     protected async createResources(): Promise<ResourceData> {
         const context = await (this.browser as puppeteer.Browser)

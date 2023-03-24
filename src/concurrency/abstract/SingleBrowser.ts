@@ -1,13 +1,13 @@
 
 import * as puppeteer from 'puppeteer';
-import ConcurrencyImplementation, { ResourceData } from './ConcurrencyImplementation';
+import Concurrency, { ResourceData } from './Concurrency';
 
-import { debugGenerator, timeoutExecute } from '../util';
-const debug = debugGenerator('SingleBrowserImpl');
+import { debugGenerator, timeoutExecute } from '../../utils';
+const debug = debugGenerator('SingleBrowser');
 
 const BROWSER_TIMEOUT = 5000;
 
-export default abstract class SingleBrowserImplementation extends ConcurrencyImplementation {
+export default abstract class SingleBrowser extends Concurrency {
 
     protected browser: puppeteer.Browser | null = null;
 

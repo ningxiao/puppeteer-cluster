@@ -1,10 +1,10 @@
 
 import * as puppeteer from 'puppeteer';
 
-import { ResourceData } from '../ConcurrencyImplementation';
-import SingleBrowserImplementation from '../SingleBrowserImplementation';
+import { ResourceData } from './abstract/Concurrency';
+import SingleBrowser from './abstract/SingleBrowser';
 
-export default class Page extends SingleBrowserImplementation {
+export default class Page extends SingleBrowser {
 
     protected async createResources(): Promise<ResourceData> {
         return {

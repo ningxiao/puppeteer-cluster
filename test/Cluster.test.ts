@@ -1,10 +1,10 @@
-import Cluster from '../src/Cluster';
 import * as http from 'http';
-import { timeoutExecute } from '../src/util';
 import * as puppeteer from 'puppeteer';
 import * as puppeteerCore from 'puppeteer-core';
-import ConcurrencyImplementation from '../src/concurrency/ConcurrencyImplementation';
-import Browser from '../src/concurrency/built-in/Browser';
+import Cluster from '../src/cluster';
+import { timeoutExecute } from '../src/utils';
+import AbstractConcurrency from '../src/concurrency/abstract/Concurrency';
+import Browser from '../src/concurrency/Browser';
 
 const kill = require('tree-kill');
 
@@ -583,7 +583,7 @@ describe('options', () => {
         test('Test implementation', async () => {
             expect.assertions(2);
 
-            class CustomConcurrency extends ConcurrencyImplementation {
+            class CustomConcurrency extends AbstractConcurrency {
                 private browser: puppeteer.Browser | undefined = undefined;
                 public async init() {
                     this.browser = await this.puppeteer.launch(this.options);
@@ -681,7 +681,7 @@ describe('options', () => {
             const perBrowserOptions = [
                 { args: ['--test1'] },
             ];
-            class TestConcurrency extends ConcurrencyImplementation {
+            class TestConcurrency extends AbstractConcurrency {
                 private browser: puppeteer.Browser | undefined = undefined;
                 public async init() {
                     this.browser = await this.puppeteer.launch(this.options);

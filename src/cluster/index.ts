@@ -1,22 +1,21 @@
 
-import Job, { ExecuteResolve, ExecuteReject, ExecuteCallbacks } from './Job';
-import Display from './Display';
-import * as util from './util';
-import Worker, { WorkResult } from './Worker';
+import Job, { ExecuteResolve, ExecuteReject, ExecuteCallbacks } from '../job';
+import Display from '../display';
+import * as util from '../utils';
+import Worker, { WorkResult } from '../worker';
 
-import * as builtInConcurrency from './concurrency/builtInConcurrency';
+import * as builtInConcurrency from '../concurrency';
 
 import type { Page, PuppeteerNodeLaunchOptions } from 'puppeteer';
-import Queue from './Queue';
-import SystemMonitor from './SystemMonitor';
+import Queue from '../queue';
+import SystemMonitor from '../systemmonitor';
 import { EventEmitter } from 'events';
-import ConcurrencyImplementation, { WorkerInstance, ConcurrencyImplementationClassType }
-    from './concurrency/ConcurrencyImplementation';
+import ConcurrencyImplementation, { WorkerInstance, ConcurrencyClassType } from '../concurrency/abstract/Concurrency';
 
 const debug = util.debugGenerator('Cluster');
 
 interface ClusterOptions {
-    concurrency: number | ConcurrencyImplementationClassType;
+    concurrency: number | ConcurrencyClassType;
     maxConcurrency: number;
     workerCreationDelay: number;
     puppeteerOptions: PuppeteerNodeLaunchOptions;
@@ -88,7 +87,7 @@ export default class Cluster<JobData = any, ReturnData = any> extends EventEmitt
 
     private taskFunction: TaskFunction<JobData, ReturnData> | null = null;
     private idleResolvers: (() => void)[] = [];
-    private waitForOneResolvers: ((data:JobData) => void)[] = [];
+    private waitForOneResolvers: ((data: JobData) => void)[] = [];
     private browser: ConcurrencyImplementation | null = null;
 
     private isClosed = false;
@@ -220,7 +219,7 @@ export default class Cluster<JobData = any, ReturnData = any> extends EventEmitt
     }
 
     private nextWorkCall: number = 0;
-    private workCallTimeout: NodeJS.Timer|null = null;
+    private workCallTimeout: NodeJS.Timer | null = null;
 
     // check for new work soon (wait if there will be put more data into the queue, first)
     private async work() {
@@ -379,7 +378,7 @@ export default class Cluster<JobData = any, ReturnData = any> extends EventEmitt
     // Type Guard for TypeScript
     private isTaskFunction(
         data: JobData | TaskFunction<JobData, ReturnData>,
-    ) : data is TaskFunction<JobData, ReturnData> {
+    ): data is TaskFunction<JobData, ReturnData> {
         return (typeof data === 'function');
     }
 
@@ -440,7 +439,7 @@ export default class Cluster<JobData = any, ReturnData = any> extends EventEmitt
     }
 
     public waitForOne(): Promise<JobData> {
-        return new Promise(resolve  => this.waitForOneResolvers.push(resolve));
+        return new Promise(resolve => this.waitForOneResolvers.push(resolve));
     }
 
     public async close(): Promise<void> {
@@ -482,12 +481,10 @@ export default class Cluster<JobData = any, ReturnData = any> extends EventEmitt
         const timeDiff = now - this.startTime;
 
         const doneTargets = this.allTargetCount - this.jobQueue.size() - this.workersBusy.length;
-        const donePercentage = this.allTargetCount === 0
-            ? 1 : (doneTargets / this.allTargetCount);
+        const donePercentage = this.allTargetCount === 0 ? 1 : (doneTargets / this.allTargetCount);
         const donePercStr = (100 * donePercentage).toFixed(2);
 
-        const errorPerc = doneTargets === 0 ?
-            '0.00' : (100 * this.errorCount / doneTargets).toFixed(2);
+        const errorPerc = doneTargets === 0 ? '0.00' : (100 * this.errorCount / doneTargets).toFixed(2);
 
         const timeRunning = util.formatDuration(timeDiff);
 
